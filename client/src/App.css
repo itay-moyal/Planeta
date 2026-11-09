@@ -1,0 +1,11 @@
+body { margin: 0; font-family: system-ui, sans-serif; background: #f4f8f3; }
+main { max-width: 480px; margin: 0 auto; padding: 16px; }
+.upload { display: block; text-align: center; padding: 16px; background: #2e7d32; color: #fff; border-radius: 12px; cursor: pointer; }
+.preview { width: 100%; max-height: 300px; object-fit: contain; background: #e8efe6; border-radius: 12px; margin-top: 12px; }
+.error { color: #b00020; }
+.candidates { list-style: none; padding: 0; }
+.candidates li { display: flex; gap: 8px; align-items: center; background: #fff; border-radius: 12px; padding: 12px; margin-top: 8px; }
+.candidates li > div { flex: 1; }
+.candidates img { width: 64px; height: 64px; object-fit: cover; border-radius: 8px; }
+.sci { font-style: italic; color: #555; }
+footer { text-align: center; color: #666; margin-top: 24px; font-size: 0.85em; }
