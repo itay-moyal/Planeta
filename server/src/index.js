@@ -2,6 +2,11 @@ import mongoose from 'mongoose';
 import { config } from './config.js';
 import { app } from './app.js';
 
+if (!config.jwtSecret) {
+  console.error('JWT_SECRET is not set - refusing to start');
+  process.exit(1);
+}
+
 // Phase 1 stores nothing yet; we only prove the connection works.
 if (config.mongoUri) {
   try {

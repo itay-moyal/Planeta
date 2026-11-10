@@ -9,6 +9,10 @@ const MESSAGES = {
   SERVICE_DISABLED: 'שירות הזיהוי כבוי זמנית.',
   UPSTREAM_FAILED: 'שירות הזיהוי לא זמין כרגע. נסו שוב מאוחר יותר.',
   SERVER_ERROR: 'אירעה שגיאה. נסו שוב.',
+  INVALID_INPUT: 'הפרטים שהוזנו אינם תקינים. נא לבדוק אימייל וסיסמה (לפחות 8 תווים).',
+  EMAIL_TAKEN: 'כתובת האימייל כבר רשומה.',
+  BAD_CREDENTIALS: 'אימייל או סיסמה שגויים.',
+  UNAUTHORIZED: 'יש להתחבר כדי להמשיך.',
 };
 
 const STATUS = {
@@ -21,6 +25,10 @@ const STATUS = {
   SERVICE_DISABLED: 503,
   UPSTREAM_FAILED: 502,
   SERVER_ERROR: 500,
+  INVALID_INPUT: 400,
+  EMAIL_TAKEN: 409,
+  BAD_CREDENTIALS: 401,
+  UNAUTHORIZED: 401,
 };
 
 export class AppError extends Error {

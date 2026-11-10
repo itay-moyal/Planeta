@@ -4,5 +4,8 @@ export const config = {
   mongoUri: process.env.MONGODB_URI || '',
   maxImageBytes: (Number(process.env.MAX_IMAGE_MB) || 5) * 1024 * 1024,
   identifyKillSwitch: process.env.IDENTIFY_KILL_SWITCH === 'true',
+  jwtSecret: process.env.JWT_SECRET || '',
+  jwtExpiresDays: Number(process.env.JWT_EXPIRES_DAYS) || 7,
+  cookieSecure: process.env.COOKIE_SECURE === 'true',
   clientOrigin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
 };
