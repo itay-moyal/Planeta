@@ -5,6 +5,8 @@ import { config } from './config.js';
 import identifyRoutes from './routes/identify.routes.js';
 import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
+import plantRoutes from './routes/plant.routes.js';
+import planterRoutes from './routes/planter.routes.js';
 import { errorHandler } from './errors.js';
 
 export const app = express();
@@ -14,5 +16,7 @@ app.use(cookieParser());
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 app.use('/api/auth', authRoutes);
 app.use('/api/me', userRoutes);
+app.use('/api/plants', plantRoutes);
+app.use('/api/planters', planterRoutes);
 app.use('/api/identify', identifyRoutes);
 app.use(errorHandler);

@@ -13,6 +13,8 @@ const MESSAGES = {
   EMAIL_TAKEN: 'כתובת האימייל כבר רשומה.',
   BAD_CREDENTIALS: 'אימייל או סיסמה שגויים.',
   UNAUTHORIZED: 'יש להתחבר כדי להמשיך.',
+  NOT_FOUND: 'הפריט לא נמצא.',
+  LIMIT_REACHED: 'הגעתם למגבלת הפריטים המותרת.',
 };
 
 const STATUS = {
@@ -29,6 +31,8 @@ const STATUS = {
   EMAIL_TAKEN: 409,
   BAD_CREDENTIALS: 401,
   UNAUTHORIZED: 401,
+  NOT_FOUND: 404,
+  LIMIT_REACHED: 409,
 };
 
 export class AppError extends Error {
