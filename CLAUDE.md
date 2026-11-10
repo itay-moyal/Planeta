@@ -1,4 +1,4 @@
-# CLAUDE.md — Plant Care Assistant ("Leaf" working title)
+# CLAUDE.md — Plant Care Assistant ("Planeta")
 
 > Read this file fully before doing anything. If something here conflicts with a request in chat, stop and ask.
 > Also follow the installed `andrej-karpathy-skills` guidelines (think before coding, keep it simple, make surgical changes, work toward verifiable goals). Where this file is stricter, this file wins.

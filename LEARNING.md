@@ -1,6 +1,16 @@
 # LEARNING.md
 
-## Phase 1: request flow (Itay's explanation)
+## Phase 1: app flow (Itay's explanation, technical)
+
+1. The user is asked to capture/add a photo.
+2. Express rate limit and multer check the file (size and type) and keep the photo in memory; it is not saved anywhere.
+3. The request is sent to the Planeta API.
+4. The service gets the top 3 results.
+5. If anything fails, an error appears.
+
+Correction: step 3 is mixed up. The request to our Planeta API (`/api/identify`) comes first, and the rate limit and multer run inside it. Only then does our service call the Pl@ntNet API. The error is a Hebrew message from the server.
+
+## Phase 1: user flow (Itay's earlier explanation)
 
 1. The user uploads or captures a plant photo.
 2. The photo is uploaded.
