@@ -15,7 +15,10 @@ export default function NavBar() {
       <Link to="/" className="brand">Planeta 🌿</Link>
       <div className="nav-links">
         {user ? (
-          <button type="button" className="link-button" onClick={onLogout}>התנתקות</button>
+          <>
+            <Link to="/settings">הגדרות</Link>
+            <button type="button" className="link-button" onClick={onLogout}>התנתקות</button>
+          </>
         ) : (
           <Link to="/login">התחברות</Link>
         )}
