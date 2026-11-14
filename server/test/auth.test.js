@@ -49,6 +49,16 @@ describe.skipIf(!dbTestsEnabled)('auth with a test database', () => {
     expect(res.headers['set-cookie'][0]).toMatch(/HttpOnly/i);
   });
 
+  it('uses the timezone sent at signup, and falls back to the default if it is invalid', async () => {
+    const ok = await request(app).post('/api/auth/signup')
+      .send({ email: 'tz1@example.com', password: 'password123', timezone: 'America/New_York' });
+    expect(ok.body.user.timezone).toBe('America/New_York');
+    const bad = await request(app).post('/api/auth/signup')
+      .send({ email: 'tz2@example.com', password: 'password123', timezone: 'Not/AZone' });
+    expect(bad.status).toBe(201);
+    expect(bad.body.user.timezone).toBe('Asia/Jerusalem');
+  });
+
   it('rejects a duplicate email', async () => {
     const res = await request(app).post('/api/auth/signup').send(creds);
     expect(res.status).toBe(409);

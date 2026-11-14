@@ -20,7 +20,9 @@ export function AuthProvider({ children }) {
   }
 
   async function signup(email, password) {
-    const data = await api('/api/auth/signup', { method: 'POST', json: { email, password } });
+    // New accounts start with the browser's timezone; the user can change it later in settings.
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const data = await api('/api/auth/signup', { method: 'POST', json: { email, password, timezone } });
     setUser(data.user);
   }
 

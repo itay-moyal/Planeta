@@ -4,7 +4,7 @@ import { User } from '../models/user.model.js';
 // channelAddress is NOT editable here: it is set only by the Telegram linking flow (phase 4).
 const CHANNELS = ['telegram', 'whatsapp', 'email'];
 
-function isValidTimezone(tz) {
+export function isValidTimezone(tz) {
   try {
     new Intl.DateTimeFormat('en', { timeZone: tz });
     return typeof tz === 'string' && tz.length > 0;

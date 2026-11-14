@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import { config } from '../config.js';
 import { AppError } from '../errors.js';
 import { User } from '../models/user.model.js';
+import { isValidTimezone } from './user.service.js';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -31,14 +32,16 @@ export function verifyToken(token) {
   }
 }
 
-export async function signup({ email, password }) {
+export async function signup({ email, password, timezone }) {
   if (typeof email !== 'string' || !EMAIL_RE.test(email.trim())) throw new AppError('INVALID_INPUT');
   if (typeof password !== 'string' || password.length < 8 || password.length > 72) {
     throw new AppError('INVALID_INPUT'); // bcrypt only uses the first 72 bytes
   }
   const passwordHash = await bcrypt.hash(password, 10);
   try {
-    return await User.create({ email, passwordHash });
+    // The browser's timezone is only a starting default: a bad value just falls back to the model default.
+    const tz = isValidTimezone(timezone) ? { timezone } : {};
+    return await User.create({ email, passwordHash, ...tz });
   } catch (err) {
     if (err.code === 11000) throw new AppError('EMAIL_TAKEN');
     throw err;
