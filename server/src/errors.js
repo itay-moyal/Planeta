@@ -15,6 +15,8 @@ const MESSAGES = {
   UNAUTHORIZED: 'יש להתחבר כדי להמשיך.',
   NOT_FOUND: 'הפריט לא נמצא.',
   LIMIT_REACHED: 'הגעתם למגבלת הפריטים המותרת.',
+  PENDING_EXPIRED: 'תוצאת הזיהוי פגה. נא להעלות את התמונה שוב.',
+  VISITOR_LIMIT: 'הגעתם למגבלת הזיהויים היומית לאורחים. הירשמו כדי להמשיך.',
 };
 
 const STATUS = {
@@ -33,6 +35,8 @@ const STATUS = {
   UNAUTHORIZED: 401,
   NOT_FOUND: 404,
   LIMIT_REACHED: 409,
+  PENDING_EXPIRED: 404,
+  VISITOR_LIMIT: 429,
 };
 
 export class AppError extends Error {

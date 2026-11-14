@@ -8,7 +8,7 @@
 - Itay: junior full-stack developer (React, Redux, Node/Express, MongoDB, Socket.io, Vite). Looking for a full-stack job/internship.
 - Goal of this project: a portfolio piece that shows real use of LLMs, an agent with tools, and a small machine-learning component, built **with** Claude Code but **fully understood by Itay**. He must be able to explain every part in an interview.
 - Real use case: Itay has 4-5 plants at home and will add 6-7 herbs (mint, basil, etc.) to a balcony planter in Israel. He is the first user and the test case, **but the product is multi-user**: anyone should be able to sign up, add their own plants, and get their own reminders. Never hardcode anything specific to Itay (names, location, channel, plants).
-- Low friction still matters: sign-up must be quick, and a visitor should be able to try plant identification (and a demo with sample data) before creating an account.
+- Low friction still matters: sign-up must be quick (email + password, no email verification for now). The app must behave like a real production product: interviewers go through the real flow themselves (upload, sign up, see the plant, save it). There is no demo mode and no sample data.
 - Language: all code, comments, commits and docs in English. **User-facing app text is Hebrew (RTL)**.
 
 ## 2. Working agreement (most important section)
@@ -27,7 +27,7 @@
 
 ## 3. What the app does (product flow)
 
-0. **Account (from phase 2):** quick sign-up/login (see section 4). On first login the user sets: city (for weather, not exact address), timezone, and preferred reminder channel. A visitor without an account can try identification once or twice and explore a demo account with sample plants.
+0. **Account (from phase 2):** quick sign-up/login (see section 4). On first login the user sets: city (for weather, not exact address), timezone, and preferred reminder channel. A visitor without an account can upload a photo and run identification, but sees only a teaser (a match was found, with its confidence), never the species. The server holds the result for about 30 minutes under a random token and releases it once, when the visitor signs up or logs in and claims it (no second Pl@ntNet call). The hiding is enforced on the server, never only in the UI. Visitors are limited per IP per day.
 1. **Add plant:** the user takes/uploads a photo.
 2. **Identify:** backend sends the photo to the Pl@ntNet identification API and gets a ranked list of species with confidence scores.
 3. **Confirm (mandatory):** UI shows the top 3 candidates with reference photos and confidence. The user picks the right one, or "none of these" (then manual search by name). The app **never auto-accepts** an identification.
@@ -107,11 +107,11 @@
 - Written before coding: short plan, final data model (including `User` and `userId` scoping), list of env vars.
 - Done when: uploading a real photo of a plant returns candidates in the UI, errors (bad photo, API failure, quota reached, no network) show a Hebrew message, and Itay can explain the request flow end to end.
 
-**Phase 2: accounts, confirm and save** — sign-up/login, user settings (city, timezone), pick a candidate, save plant + placement per user, plants list page, demo account. Includes the cross-user access tests.
+**Phase 2: accounts, confirm and save** — sign-up/login, user settings (city, timezone), pick a candidate, save plant + placement per user, plants list page, visitor teaser and claim after sign-up. Includes the cross-user access tests.
 **Phase 3: care data and plan** — fetch + cache care data, one LLM call per plant, show the Hebrew care plan, warnings (pet toxicity, planter conflicts).
 **Phase 4: reminders** — scheduler (per-user timezone), Telegram channel with the linking flow, email fallback, reply handling, watering log. WhatsApp only if time allows.
 **Phase 5: weather and learning** — Open-Meteo, interval adaptation (ML v1), agent with tools.
-**Phase 6: evaluation and polish** — eval set, results, README with architecture diagram, demo mode with sample data (so interviewers can try it without Itay's real plants), deploy.
+**Phase 6: evaluation and polish** — eval set, results, README with architecture diagram, deploy to Render (the live URL interviewers use; before it, re-read the Pl@ntNet terms for hosted use). No demo mode.
 
 ## 8. Definition of done (every phase)
 - Runs locally; one-command start documented in README.

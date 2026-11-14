@@ -7,5 +7,8 @@ export const config = {
   jwtSecret: process.env.JWT_SECRET || '',
   jwtExpiresDays: Number(process.env.JWT_EXPIRES_DAYS) || 7,
   cookieSecure: process.env.COOKIE_SECURE === 'true',
+  // Identifications per IP per day for visitors without an account (tests: effectively unlimited)
+  visitorDailyLimit: Number(process.env.VISITOR_DAILY_LIMIT) || (process.env.NODE_ENV === 'test' ? 1000 : 3),
+  pendingTtlMinutes: 30,
   clientOrigin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
 };
