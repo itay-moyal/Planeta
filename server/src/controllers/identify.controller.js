@@ -2,6 +2,7 @@ import { config } from '../config.js';
 import { AppError } from '../errors.js';
 import { identifyPlant } from '../services/plantnet.service.js';
 import { claimResult, holdResult } from '../services/pending.service.js';
+import { consumeIdentification } from '../services/usage.service.js';
 
 export const PENDING_COOKIE = 'planeta_pending';
 const PENDING_COOKIE_PATH = '/api/identify';
@@ -10,6 +11,8 @@ export async function identify(req, res, next) {
   try {
     if (config.identifyKillSwitch) throw new AppError('SERVICE_DISABLED');
     if (!req.file) throw new AppError('NO_FILE');
+    // Spent before calling Pl@ntNet: failed requests may still use their credits.
+    if (req.userId) await consumeIdentification(req.userId);
     const result = await identifyPlant(req.file);
 
     if (req.userId) return res.json(result);

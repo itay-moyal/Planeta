@@ -17,6 +17,7 @@ const MESSAGES = {
   LIMIT_REACHED: 'הגעתם למגבלת הפריטים המותרת.',
   PENDING_EXPIRED: 'תוצאת הזיהוי פגה. נא להעלות את התמונה שוב.',
   VISITOR_LIMIT: 'הגעתם למגבלת הזיהויים היומית לאורחים. הירשמו כדי להמשיך.',
+  DAILY_LIMIT: 'הגעתם למגבלת הזיהויים היומית. אפשר להמשיך מחר.',
 };
 
 const STATUS = {
@@ -37,6 +38,7 @@ const STATUS = {
   LIMIT_REACHED: 409,
   PENDING_EXPIRED: 404,
   VISITOR_LIMIT: 429,
+  DAILY_LIMIT: 429,
 };
 
 export class AppError extends Error {

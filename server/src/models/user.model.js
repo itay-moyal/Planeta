@@ -8,6 +8,11 @@ const userSchema = new mongoose.Schema({
   language: { type: String, default: 'he' },
   notificationChannel: { type: String, enum: ['telegram', 'whatsapp', 'email'], default: 'email' },
   channelAddress: { type: String, default: '' },
+  // Daily usage counter; `day` is the UTC date the count belongs to (see usage.service.js)
+  usage: {
+    day: { type: String, default: '' },
+    identifications: { type: Number, default: 0 },
+  },
   isDemo: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
 });
