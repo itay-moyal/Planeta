@@ -54,6 +54,16 @@ export function validatePlacement(p) {
     }
     return out;
   }
+  if (p.location === 'garden') {
+    // In the ground: sun exposure only (no window, no light level, no pot size).
+    if (p.windowDirection !== undefined || p.lightLevel !== undefined || p.potSizeNotes !== undefined) throw bad();
+    const out = { location: 'garden' };
+    if (p.sunExposure !== undefined) {
+      if (!SUN.includes(p.sunExposure)) throw bad();
+      out.sunExposure = p.sunExposure;
+    }
+    return out;
+  }
   throw bad();
 }
 
@@ -99,7 +109,7 @@ export async function createPlant(userId, input) {
 
   let planterId = null;
   if (input.planterId !== undefined && input.planterId !== null) {
-    if (placement.location !== 'balcony') throw bad();
+    if (placement.location === 'indoor') throw bad(); // only outdoor plants (balcony, garden) can share a planter
     await assertOwnPlanter(userId, input.planterId);
     planterId = input.planterId;
   }
@@ -138,7 +148,7 @@ export async function updatePlant(userId, id, input) {
     }
   }
   // A plant moved indoors cannot stay in a planter.
-  if (plant.placement.location !== 'balcony' && plant.planterId) {
+  if (plant.placement.location === 'indoor' && plant.planterId) {
     if (input.planterId !== undefined && input.planterId !== null) throw bad();
     plant.planterId = null;
   }

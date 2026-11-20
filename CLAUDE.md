@@ -31,9 +31,9 @@
 1. **Add plant:** the user takes/uploads a photo.
 2. **Identify:** backend sends the photo to the Pl@ntNet identification API and gets a ranked list of species with confidence scores.
 3. **Confirm (mandatory):** UI shows the top 3 candidates with reference photos and confidence. The user picks the right one, or "none of these" (then manual search by name). The app **never auto-accepts** an identification.
-4. **Place:** the user marks the location: indoor (window direction, light level) or balcony planter (sun exposure, pot size). Planter-mates are tracked (several plants can share one planter).
+4. **Place:** the user marks the location: indoor (window direction, light level), balcony planter (sun exposure, pot size), or garden (sun exposure). Planter-mates are tracked (several plants can share one planter).
 5. **Care profile:** backend fetches care data for the species (watering, light, temperature, toxicity), caches it in MongoDB, then asks the LLM **once per plant** to write a personalized care plan in Hebrew, grounded only in the fetched data plus the placement info. If care data is missing, say so; do not fill gaps with invented facts.
-6. **Schedule:** a watering schedule is created from the care profile, the season, and (for the balcony) weather.
+6. **Schedule:** a watering schedule is created from the care profile, the season, and (for outdoor plants: balcony and garden) weather.
 7. **Remind:** at the scheduled time the app sends a notification (Telegram first; WhatsApp later, see 6).
 8. **Feedback loop:** the notification asks "is the soil still moist?" (yes / no / already watered). The answer is logged and adjusts the plant's watering interval (see 5, ML).
 9. **Dashboard:** shows all plants, next watering, history, care plan, and any warnings (e.g., plants that should not share a planter, pet toxicity).
@@ -52,7 +52,7 @@
 
 - `User`: email, passwordHash, city, timezone, language (default `he`), notificationChannel (`telegram` | `whatsapp` | `email`), channelAddress (linked chat id), usage counters (identifications and LLM calls per day), createdAt
 - All collections below also carry `userId` (indexed).
-- `Plant`: name, species (scientific + common names), identificationConfidence, confirmedByUser, photoUrl, location (`indoor` | `balcony`), light notes, planterId?, careProfileRef, intervalDays, lastWateredAt, createdAt
+- `Plant`: name, species (scientific + common names), identificationConfidence, confirmedByUser, photoUrl, location (`indoor` | `balcony` | `garden`), light notes, planterId?, careProfileRef, intervalDays, lastWateredAt, createdAt
 - `Planter`: name, sunExposure, sizeNotes, plantIds
 - `SpeciesCache`: scientificName, sourceData (raw), source, fetchedAt
 - `WateringLog`: plantId, at, action (`watered` | `skipped_rain` | `still_moist` | `was_dry`), source (`user` | `reminder_reply`)
@@ -64,7 +64,7 @@
 |---|---|---|
 | Plant ID from photo | Pl@ntNet API | Free tier is limited per day. Show attribution in the UI. Failed requests may consume credits. Weaker on young plants and grasses. Always show top-k + confidence. |
 | Care data | Perenual (primary), Trefle (fallback) | Coverage is incomplete. Cache by species. Handle "no data" explicitly. Respect rate limits. |
-| Weather | Open-Meteo (no key) | Used for balcony only: skip/delay watering after rain, shorten the interval in heat. |
+| Weather | Open-Meteo (no key) | Used for outdoor plants only (balcony, garden): skip/delay watering after rain, shorten the interval in heat. |
 | LLM | Anthropic API (separate billing from the Claude Pro plan) | Called rarely: once per new plant for the care plan, plus agent steps in phase 5. Use structured output (JSON schema). Cache results. Keep prompts in `/server/prompts/`. Log token usage. |
 
 **Verify every endpoint, parameter and limit against the current official docs before coding against it.**

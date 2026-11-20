@@ -24,8 +24,16 @@ describe('validatePlacement (no database needed)', () => {
       .toEqual({ location: 'indoor', windowDirection: 'S', lightLevel: 'high' });
     expect(validatePlacement({ location: 'balcony', sunExposure: 'shade' })).toEqual({ location: 'balcony', sunExposure: 'shade' });
   });
+  it('accepts a garden placement with sun exposure only', () => {
+    expect(validatePlacement({ location: 'garden' })).toEqual({ location: 'garden' });
+    expect(validatePlacement({ location: 'garden', sunExposure: 'full' })).toEqual({ location: 'garden', sunExposure: 'full' });
+  });
   it.each([
-    [{ location: 'garden' }],
+    [{ location: 'swamp' }],
+    [{ location: 'garden', potSizeNotes: 'big' }],
+    [{ location: 'garden', windowDirection: 'N' }],
+    [{ location: 'garden', lightLevel: 'high' }],
+    [{ location: 'garden', sunExposure: 'blinding' }],
     [{ location: 'indoor', sunExposure: 'full' }],
     [{ location: 'balcony', windowDirection: 'N' }],
     [{ location: 'indoor', lightLevel: 'blinding' }],
@@ -104,6 +112,33 @@ describe.skipIf(!dbTestsEnabled)('plants and planters with a test database', () 
     expect(res.status).toBe(200);
     expect(res.body.plant).toMatchObject({ name: 'Kitchen mint', planterId: null });
     expect(res.body.plant.placement).toEqual({ location: 'indoor', windowDirection: 'S' });
+  });
+
+  it('saves a garden plant, with or without a planter (a garden bed)', async () => {
+    const [planter] = (await A.get('/api/planters')).body.planters;
+    const plain = await A.post('/api/plants').send({ ...mint, placement: { location: 'garden', sunExposure: 'partial' } });
+    expect(plain.status).toBe(201);
+    expect(plain.body.plant.placement).toEqual({ location: 'garden', sunExposure: 'partial' });
+    const inBed = await A.post('/api/plants').send({ ...mint, placement: { location: 'garden' }, planterId: planter.id });
+    expect(inBed.status).toBe(201);
+    expect(inBed.body.plant.planterId).toBe(planter.id);
+    await A.post('/api/plants').send({ ...mint, placement: { location: 'garden', potSizeNotes: 'big' } }).expect(400);
+  });
+
+  it('keeps the planter when a plant moves from balcony to garden, and clears it when it moves indoors', async () => {
+    const [planter] = (await A.get('/api/planters')).body.planters;
+    const created = (await A.post('/api/plants').send({ ...mint, planterId: planter.id }).expect(201)).body.plant;
+    const toGarden = await A.patch(`/api/plants/${created.id}`).send({ placement: { location: 'garden', sunExposure: 'full' } });
+    expect(toGarden.status).toBe(200);
+    expect(toGarden.body.plant.planterId).toBe(planter.id);
+    const indoors = await A.patch(`/api/plants/${created.id}`).send({ placement: { location: 'indoor' } });
+    expect(indoors.body.plant.planterId).toBeNull();
+  });
+
+  it("cannot put a garden plant in another user's planter", async () => {
+    const planterB = (await B.get('/api/planters')).body.planters[0]?.id
+      ?? (await B.post('/api/planters').send({ name: 'B bed' }).expect(201)).body.planter.id;
+    await A.post('/api/plants').send({ ...mint, placement: { location: 'garden' }, planterId: planterB }).expect(404);
   });
 
   it('cannot change the species or the owner through an edit', async () => {

@@ -11,7 +11,7 @@ const plantSchema = new mongoose.Schema({
   identificationConfidence: { type: Number, default: null },
   referenceImageUrl: { type: String, default: '' },
   placement: {
-    location: { type: String, enum: ['indoor', 'balcony'], required: true },
+    location: { type: String, enum: ['indoor', 'balcony', 'garden'], required: true },
     windowDirection: { type: String, enum: ['N', 'E', 'S', 'W'] },
     lightLevel: { type: String, enum: ['low', 'medium', 'high'] },
     sunExposure: { type: String, enum: ['full', 'partial', 'shade'] },

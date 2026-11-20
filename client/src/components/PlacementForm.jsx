@@ -41,7 +41,9 @@ export default function PlacementForm({ initial = {}, submitLabel, onSubmit }) {
     if (location === 'indoor') {
       return { location, ...(windowDirection && { windowDirection }), ...(lightLevel && { lightLevel }) };
     }
-    return { location, ...(sunExposure && { sunExposure }), ...(potSizeNotes.trim() && { potSizeNotes }) };
+    // Pot size only applies to the balcony: a garden plant is in the ground.
+    const pot = location === 'balcony' && potSizeNotes.trim() && { potSizeNotes };
+    return { location, ...(sunExposure && { sunExposure }), ...pot };
   }
 
   async function onFormSubmit(e) {
@@ -50,7 +52,7 @@ export default function PlacementForm({ initial = {}, submitLabel, onSubmit }) {
     setBusy(true);
     try {
       let planterId = null;
-      if (location === 'balcony' && planterChoice === 'new') {
+      if (location !== 'indoor' && planterChoice === 'new') {
         const body = { name: newPlanter.name };
         if (newPlanter.sunExposure) body.sunExposure = newPlanter.sunExposure;
         if (newPlanter.sizeNotes.trim()) body.sizeNotes = newPlanter.sizeNotes;
@@ -59,7 +61,7 @@ export default function PlacementForm({ initial = {}, submitLabel, onSubmit }) {
         setPlanters((list) => [...list, data.planter]);
         setPlanterChoice(data.planter.id);
         planterId = data.planter.id;
-      } else if (location === 'balcony' && planterChoice !== 'none') {
+      } else if (location !== 'indoor' && planterChoice !== 'none') {
         planterId = planterChoice;
       }
       await onSubmit({ name, placement: buildPlacement(), planterId });
@@ -82,6 +84,7 @@ export default function PlacementForm({ initial = {}, submitLabel, onSubmit }) {
         <select value={location} onChange={(e) => setLocation(e.target.value)}>
           <option value="indoor">בתוך הבית</option>
           <option value="balcony">מרפסת / עציץ חיצוני</option>
+          <option value="garden">גינה</option>
         </select>
       </label>
 
@@ -93,22 +96,24 @@ export default function PlacementForm({ initial = {}, submitLabel, onSubmit }) {
       ) : (
         <>
           <Select label="חשיפה לשמש" value={sunExposure} onChange={setSunExposure} options={SUNS} />
+          {location === 'balcony' && (
+            <label>
+              גודל העציץ (אופציונלי)
+              <input value={potSizeNotes} onChange={(e) => setPotSizeNotes(e.target.value)} maxLength={200} />
+            </label>
+          )}
           <label>
-            גודל העציץ (אופציונלי)
-            <input value={potSizeNotes} onChange={(e) => setPotSizeNotes(e.target.value)} maxLength={200} />
-          </label>
-          <label>
-            גדלים ביחד באותה תיבה?
+            {location === 'garden' ? 'גדלים ביחד באותה ערוגה?' : 'גדלים ביחד באותה אדנית?'}
             <select value={planterChoice} onChange={(e) => setPlanterChoice(e.target.value)}>
-              <option value="none">לא, עציץ בודד</option>
+              <option value="none">{location === 'garden' ? 'לא, צמח בודד בגינה' : 'לא, עציץ בודד'}</option>
               {planters.map((pl) => <option key={pl.id} value={pl.id}>{pl.name}</option>)}
-              <option value="new">+ תיבת גידול חדשה</option>
+              <option value="new">{location === 'garden' ? '+ ערוגה חדשה' : '+ אדנית חדשה'}</option>
             </select>
           </label>
           {planterChoice === 'new' && (
             <fieldset className="subform">
               <label>
-                שם התיבה
+                {location === 'garden' ? 'שם הערוגה' : 'שם האדנית'}
                 <input value={newPlanter.name} maxLength={60} required
                   onChange={(e) => setNewPlanter({ ...newPlanter, name: e.target.value })} />
               </label>

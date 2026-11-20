@@ -10,7 +10,7 @@ function describePlacement(p) {
     ? ['בתוך הבית',
       p.windowDirection && `חלון ${label(WINDOWS, p.windowDirection)}`,
       p.lightLevel && `רמת אור ${label(LIGHTS, p.lightLevel)}`]
-    : ['מרפסת',
+    : [p.location === 'garden' ? 'גינה' : 'מרפסת',
       p.sunExposure && label(SUNS, p.sunExposure),
       p.potSizeNotes];
   return parts.filter(Boolean).join(' · ');
@@ -80,7 +80,7 @@ export default function PlantsPage() {
                   <strong>{plant.name}</strong>
                   <div className="sci">{plant.species.scientificName}</div>
                   <div>{describePlacement(plant.placement)}</div>
-                  {plant.planterId && planterName(plant.planterId) && <div>תיבה: {planterName(plant.planterId)}</div>}
+                  {plant.planterId && planterName(plant.planterId) && <div>{plant.placement.location === 'garden' ? 'ערוגה' : 'אדנית'}: {planterName(plant.planterId)}</div>}
                   <div className="actions">
                     <button type="button" className="link-button" onClick={() => setEditingId(plant.id)}>עריכה</button>
                     <button type="button" className="link-button danger" onClick={() => removePlant(plant)}>מחיקה</button>
