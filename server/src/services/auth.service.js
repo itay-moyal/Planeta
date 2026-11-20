@@ -4,6 +4,7 @@ import { config } from '../config.js';
 import { AppError } from '../errors.js';
 import { User } from '../models/user.model.js';
 import { isValidTimezone } from './user.service.js';
+import { identificationsLeft } from './usage.service.js';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -17,6 +18,7 @@ export function toPublicUser(user) {
     language: user.language,
     notificationChannel: user.notificationChannel,
     isDemo: user.isDemo,
+    identificationsLeft: identificationsLeft(user), // the user's own allowance only, never the shared quota
   };
 }
 

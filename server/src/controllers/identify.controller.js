@@ -12,10 +12,11 @@ export async function identify(req, res, next) {
     if (config.identifyKillSwitch) throw new AppError('SERVICE_DISABLED');
     if (!req.file) throw new AppError('NO_FILE');
     // Spent before calling Pl@ntNet: failed requests may still use their credits.
-    if (req.userId) await consumeIdentification(req.userId);
+    const left = req.userId ? await consumeIdentification(req.userId) : null;
     const result = await identifyPlant(req.file);
 
-    if (req.userId) return res.json(result);
+    // Users see only their own allowance, never how much of the shared Pl@ntNet quota is left.
+    if (req.userId) return res.json({ candidates: result.candidates, identificationsLeft: left });
 
     // Visitor: hold the real result on the server and send only a teaser.
     // The species must never appear in this response.

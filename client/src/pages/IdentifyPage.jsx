@@ -27,7 +27,8 @@ function writeStored(userId, candidates, chosen) {
 }
 
 export default function IdentifyPage() {
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
+  const left = user?.identificationsLeft; // the user's own daily allowance (undefined for visitors)
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -80,9 +81,13 @@ export default function IdentifyPage() {
     try {
       const data = await api('/api/identify', { method: 'POST', body: form });
       if (data.teaser) setTeaser(data.teaser);
-      else update(data.candidates, null);
+      else {
+        update(data.candidates, null);
+        setUser((u) => ({ ...u, identificationsLeft: data.identificationsLeft }));
+      }
     } catch (err) {
       setError(err.message); // already Hebrew
+      if (err.code === 'DAILY_LIMIT') setUser((u) => ({ ...u, identificationsLeft: 0 }));
     } finally {
       setLoading(false);
     }
@@ -157,9 +162,16 @@ export default function IdentifyPage() {
 
   return (
     <main>
-      <label className="upload">
+      {left !== undefined && (
+        <p className="allowance">
+          {left === 0
+            ? 'הגעתם למגבלת הזיהויים להיום. אפשר להמשיך מחר.'
+            : left === 1 ? 'נשאר לכם זיהוי אחד היום' : `נשארו לכם ${left} זיהויים היום`}
+        </p>
+      )}
+      <label className={left === 0 ? 'upload disabled' : 'upload'}>
         צלמו או העלו תמונה של צמח
-        <input type="file" accept="image/*" capture="environment" onChange={onFile} hidden />
+        <input type="file" accept="image/*" capture="environment" onChange={onFile} disabled={left === 0} hidden />
       </label>
 
       {preview && <img className="preview" src={preview} alt="התמונה שהועלתה" />}

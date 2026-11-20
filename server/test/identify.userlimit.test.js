@@ -41,6 +41,28 @@ describe.skipIf(!dbTestsEnabled)('per-user daily identification limit', () => {
     await mongoose.disconnect();
   });
 
+  it('tells the user how many identifications are left, and never the shared quota', async () => {
+    const signup = await request(app).post('/api/auth/signup').send({ email: 'g@example.com', password: 'password123' });
+    expect(signup.body.user.identificationsLeft).toBe(2);
+    const g = request.agent(app);
+    await g.post('/api/auth/login').send({ email: 'g@example.com', password: 'password123' }).expect(200);
+
+    const first = await identify(g);
+    expect(first.status).toBe(200);
+    expect(first.body.identificationsLeft).toBe(1);
+    expect(first.body.candidates).toHaveLength(1);
+    expect(JSON.stringify(first.body)).not.toMatch(/remainingIdentificationRequests/);
+    expect((await g.get('/api/auth/me')).body.user.identificationsLeft).toBe(1);
+
+    expect((await identify(g)).body.identificationsLeft).toBe(0);
+    await identify(g).expect(429);
+    expect((await g.get('/api/auth/me')).body.user.identificationsLeft).toBe(0);
+
+    // A stored day other than today means nothing is used yet, even before any request.
+    await mongoose.model('User').updateOne({ email: 'g@example.com' }, { 'usage.day': '2000-01-01' });
+    expect((await g.get('/api/auth/me')).body.user.identificationsLeft).toBe(2);
+  });
+
   it('blocks a user after the limit, with a Hebrew message, without affecting another user', async () => {
     const a = await newUser('a@example.com');
     const b = await newUser('b@example.com');
