@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api.js';
 
-const WINDOWS = [['N', 'צפון'], ['E', 'מזרח'], ['S', 'דרום'], ['W', 'מערב']];
-const LIGHTS = [['low', 'נמוכה'], ['medium', 'בינונית'], ['high', 'גבוהה']];
-const SUNS = [['full', 'שמש מלאה'], ['partial', 'שמש חלקית'], ['shade', 'צל']];
+export const WINDOWS = [['N', 'צפון'], ['E', 'מזרח'], ['S', 'דרום'], ['W', 'מערב']];
+export const LIGHTS = [['low', 'נמוכה'], ['medium', 'בינונית'], ['high', 'גבוהה']];
+export const SUNS = [['full', 'שמש מלאה'], ['partial', 'שמש חלקית'], ['shade', 'צל']];
 
 function Select({ value, onChange, options, label }) {
   return (

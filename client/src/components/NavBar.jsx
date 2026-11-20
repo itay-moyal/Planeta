@@ -16,6 +16,7 @@ export default function NavBar() {
       <div className="nav-links">
         {user ? (
           <>
+            <Link to="/plants">הצמחים שלי</Link>
             <Link to="/settings">הגדרות</Link>
             <button type="button" className="link-button" onClick={onLogout}>התנתקות</button>
           </>

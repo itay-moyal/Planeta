@@ -136,6 +136,7 @@ export default function IdentifyPage() {
         <div className="teaser">
           <p className="success">הצמח "{saved.name}" נשמר ✓</p>
           <button type="button" className="primary" onClick={() => setSaved(null)}>הוספת צמח נוסף</button>
+          <p><Link to="/plants">לרשימת הצמחים שלי</Link></p>
         </div>
       </main>
     );
