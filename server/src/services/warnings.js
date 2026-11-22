@@ -37,11 +37,11 @@ export function computeWarnings({ careData, mates = [] }) {
       const a = wateringLevel(careData.watering);
       const b = wateringLevel(mate.careData.watering);
       if (a !== null && b !== null && Math.abs(a - b) >= 2) {
-        out.push({ code: 'PLANTER_WATERING', mate: mate.name, message: `הצמח והצמח "${mate.name}" באותה ערוגה או אדנית צריכים כמויות השקיה שונות מאוד.` });
+        out.push({ code: 'PLANTER_WATERING', mate: mate.name, message: `הצמח הזה והצמח "${mate.name}" באותה ערוגה או אדנית צריכים כמויות השקיה שונות מאוד.` });
       }
       const gap = lightGap(careData.sunlight, mate.careData.sunlight);
       if (gap !== null && gap >= 2) {
-        out.push({ code: 'PLANTER_LIGHT', mate: mate.name, message: `הצמח והצמח "${mate.name}" באותה ערוגה או אדנית מעדיפים רמות אור שונות מאוד.` });
+        out.push({ code: 'PLANTER_LIGHT', mate: mate.name, message: `הצמח הזה והצמח "${mate.name}" באותה ערוגה או אדנית מעדיפים רמות אור שונות מאוד.` });
       }
     }
   }

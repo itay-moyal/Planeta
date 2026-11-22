@@ -128,6 +128,8 @@ export default function IdentifyPage() {
     if (planterId) body.planterId = planterId;
 
     const data = await api('/api/plants', { method: 'POST', json: body });
+    // Start the care plan in the background. A failure is fine: the care panel offers a retry button.
+    api(`/api/plants/${data.plant.id}/care`, { method: 'POST' }).catch(() => {});
     update([], null); // done with this identification
     setPreview(null);
     setManualOpen(false);

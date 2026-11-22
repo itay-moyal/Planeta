@@ -28,7 +28,7 @@ footer { text-align: center; color: #666; margin-top: 24px; font-size: 0.85em; }
 .subform { border: 1px solid #bbb; border-radius: 8px; display: flex; flex-direction: column; gap: 12px; }
 
 .plants { list-style: none; padding: 0; }
-.plants li { background: #fff; border-radius: 12px; padding: 12px; margin-top: 8px; }
+.plants > li { background: #fff; border-radius: 12px; padding: 12px; margin-top: 8px; }
 .plant-row { display: flex; gap: 12px; align-items: flex-start; }
 .plant-row img, .thumb { width: 64px; height: 64px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
 .thumb { background: #e8efe6; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; }
@@ -37,3 +37,10 @@ footer { text-align: center; color: #666; margin-top: 24px; font-size: 0.85em; }
 
 .allowance { text-align: center; color: #555; margin: 0 0 8px; }
 .upload.disabled { opacity: 0.5; cursor: not-allowed; }
+
+.care { margin-top: 8px; border-top: 1px solid #e3eae1; padding-top: 8px; }
+.care-body p { margin: 8px 0; }
+.care-warnings { background: #fff4e5; border: 1px solid #f0c27b; border-radius: 8px; padding: 8px 24px 8px 12px; margin: 8px 0; }
+.care-stale { background: #fffbe6; border-radius: 8px; padding: 8px; }
+.care-unknown { color: #555; }
+.care-note { color: #666; font-size: 0.8em; }

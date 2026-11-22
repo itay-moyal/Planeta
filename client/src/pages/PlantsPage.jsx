@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api.js';
-import PlacementForm, { LIGHTS, SUNS, WINDOWS } from '../components/PlacementForm.jsx';
+import CarePanel from '../components/CarePanel.jsx';
+import PlacementForm,{ LIGHTS, SUNS, WINDOWS } from '../components/PlacementForm.jsx';
 
 const label = (pairs, value) => pairs.find(([v]) => v === value)?.[1];
 
@@ -88,6 +89,7 @@ export default function PlantsPage() {
                 </div>
               </div>
             )}
+            {editingId !== plant.id && <CarePanel plantId={plant.id} placementSig={JSON.stringify(plant.placement)} />}
             {editingId === plant.id && (
               <button type="button" className="link-button" onClick={() => setEditingId(null)}>ביטול</button>
             )}
