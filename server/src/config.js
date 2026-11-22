@@ -13,6 +13,12 @@ export const config = {
   userDailyIdentifyLimit: Number(process.env.USER_DAILY_IDENTIFY_LIMIT) || (process.env.NODE_ENV === 'test' ? 1000 : 10),
   perenualApiKey: process.env.PERENUAL_API_KEY || '',
   careCacheDays: Number(process.env.CARE_CACHE_DAYS) || 30,
+  anthropicApiKey: process.env.ANTHROPIC_API_KEY || '',
+  // Global kill switch for every LLM call (shared budget protection)
+  llmKillSwitch: process.env.LLM_KILL_SWITCH === 'true',
+  // Care-plan generations per user per day (tests: effectively unlimited)
+  userDailyLlmLimit: Number(process.env.USER_DAILY_LLM_LIMIT) || (process.env.NODE_ENV === 'test' ? 1000 : 20),
+  carePlanModel: process.env.CARE_PLAN_MODEL || 'claude-haiku-5-5',
   pendingTtlMinutes: 30,
   clientOrigin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
 };

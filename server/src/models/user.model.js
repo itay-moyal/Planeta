@@ -12,6 +12,8 @@ const userSchema = new mongoose.Schema({
   usage: {
     day: { type: String, default: '' },
     identifications: { type: Number, default: 0 },
+    llmDay: { type: String, default: '' }, // own day marker, so the two counters reset independently
+    llmCalls: { type: Number, default: 0 },
   },
   isDemo: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },

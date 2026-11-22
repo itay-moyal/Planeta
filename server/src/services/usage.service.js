@@ -36,3 +36,21 @@ export async function consumeIdentification(userId) {
   // 3. Same day, at the limit (or the user no longer exists).
   throw new AppError('DAILY_LIMIT');
 }
+
+// Same pattern for LLM calls (care plans), with its own day marker. Counted before the call is made.
+export async function consumeLlmCall(userId) {
+  const today = utcDay();
+  const counted = await User.findOneAndUpdate(
+    { _id: userId, 'usage.llmDay': today, 'usage.llmCalls': { $lt: config.userDailyLlmLimit } },
+    { $inc: { 'usage.llmCalls': 1 } },
+    { returnDocument: 'after' },
+  );
+  if (counted) return;
+  const reset = await User.findOneAndUpdate(
+    { _id: userId, 'usage.llmDay': { $ne: today } },
+    { $set: { 'usage.llmDay': today, 'usage.llmCalls': 1 } },
+    { returnDocument: 'after' },
+  );
+  if (reset) return;
+  throw new AppError('LLM_DAILY_LIMIT');
+}
