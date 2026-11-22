@@ -121,11 +121,12 @@
 - `LEARNING.md` updated with Itay's own explanation.
 - Short summary of what changed and what is still unknown or risky.
 
-## 9. Project commands (fill in during phase 1)
-- Install: _TBD_
-- Dev: _TBD_
-- Test: _TBD_
-- Lint: _TBD_
+## 9. Project commands (run from the repo root)
+- Install: `npm run setup` (root, `server/` and `client/`)
+- Dev: `npm run dev` (server on :4000 and client on :5173 together, via `concurrently`)
+- Test: `npm test` (server tests; the database tests wipe `MONGODB_TEST_URI`)
+- Build: `npm run build` (client)
+- Lint: none set up yet
 
 ## 10. Open questions to resolve with Itay
 - Final project name.
