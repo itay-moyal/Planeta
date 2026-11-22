@@ -1,4 +1,5 @@
 import { createPlant, deletePlant, listPlants, toPublicPlant, updatePlant } from '../services/plant.service.js';
+import { generateCare, getCare } from '../services/care.service.js';
 
 export async function createPlantHandler(req, res, next) {
   try {
@@ -22,6 +23,22 @@ export async function updatePlantHandler(req, res, next) {
   try {
     const plant = await updatePlant(req.userId, req.params.id, req.body ?? {});
     res.json({ plant: toPublicPlant(plant) });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getCareHandler(req, res, next) {
+  try {
+    res.json({ care: await getCare(req.userId, req.params.id) });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function generateCareHandler(req, res, next) {
+  try {
+    res.json({ care: await generateCare(req.userId, req.params.id) });
   } catch (err) {
     next(err);
   }

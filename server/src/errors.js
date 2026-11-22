@@ -20,6 +20,7 @@ const MESSAGES = {
   DAILY_LIMIT: 'הגעתם למגבלת הזיהויים היומית. אפשר להמשיך מחר.',
   CARE_UNAVAILABLE: 'מידע הטיפול אינו זמין כרגע. נסו שוב מאוחר יותר.',
   LLM_DAILY_LIMIT: 'הגעתם למגבלת תוכניות הטיפול היומית. אפשר להמשיך מחר.',
+  CARE_IN_PROGRESS: 'תוכנית הטיפול בהכנה. נסו שוב בעוד רגע.',
   LLM_DISABLED: 'יצירת תוכניות טיפול כבויה זמנית.',
   LLM_UNAVAILABLE: 'לא הצלחנו ליצור תוכנית טיפול כרגע. נסו שוב מאוחר יותר.',
 };
@@ -45,6 +46,7 @@ const STATUS = {
   DAILY_LIMIT: 429,
   CARE_UNAVAILABLE: 503,
   LLM_DAILY_LIMIT: 429,
+  CARE_IN_PROGRESS: 409,
   LLM_DISABLED: 503,
   LLM_UNAVAILABLE: 502,
 };

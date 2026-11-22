@@ -33,7 +33,15 @@ export async function consumeIdentification(userId) {
   );
   if (reset) return identificationsLeft(reset);
 
-  // 3. Same day, at the limit (or the user no longer exists).
+  // 3. Someone else just started today's counter (simultaneous first requests): count ours on top of it.
+  const retried = await User.findOneAndUpdate(
+    { _id: userId, 'usage.day': today, 'usage.identifications': { $lt: config.userDailyIdentifyLimit } },
+    { $inc: { 'usage.identifications': 1 } },
+    after,
+  );
+  if (retried) return identificationsLeft(retried);
+
+  // 4. Same day, at the limit (or the user no longer exists).
   throw new AppError('DAILY_LIMIT');
 }
 
@@ -52,5 +60,12 @@ export async function consumeLlmCall(userId) {
     { returnDocument: 'after' },
   );
   if (reset) return;
+  // Lost the race to start today's counter (simultaneous first calls): count ours on top of it.
+  const retried = await User.findOneAndUpdate(
+    { _id: userId, 'usage.llmDay': today, 'usage.llmCalls': { $lt: config.userDailyLlmLimit } },
+    { $inc: { 'usage.llmCalls': 1 } },
+    { returnDocument: 'after' },
+  );
+  if (retried) return;
   throw new AppError('LLM_DAILY_LIMIT');
 }

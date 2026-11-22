@@ -126,7 +126,7 @@ export async function listPlants(userId) {
   return Plant.find({ userId }).sort({ createdAt: -1 });
 }
 
-async function findOwnPlant(userId, id) {
+export async function findOwnPlant(userId, id) {
   if (!mongoose.isValidObjectId(id)) throw new AppError('NOT_FOUND');
   const plant = await Plant.findOne({ _id: id, userId });
   if (!plant) throw new AppError('NOT_FOUND');

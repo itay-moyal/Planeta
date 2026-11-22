@@ -18,6 +18,17 @@ const plantSchema = new mongoose.Schema({
     potSizeNotes: { type: String },
   },
   planterId: { type: mongoose.Schema.Types.ObjectId, ref: 'Planter', default: null },
+  // Care plan (see care.service.js). `placementKey` is a hash of the placement the plan was written for.
+  care: {
+    status: { type: String, enum: ['ready', 'no_data'] }, // absent = nothing generated yet
+    plan: { type: mongoose.Schema.Types.Mixed, default: null },
+    model: { type: String },
+    inputTokens: { type: Number },
+    outputTokens: { type: Number },
+    placementKey: { type: String },
+    generatedAt: { type: Date },
+    generatingSince: { type: Date, default: null }, // short lock so two requests cannot both call the LLM
+  },
   createdAt: { type: Date, default: Date.now },
 });
 
