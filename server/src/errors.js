@@ -18,6 +18,7 @@ const MESSAGES = {
   PENDING_EXPIRED: 'תוצאת הזיהוי פגה. נא להעלות את התמונה שוב.',
   VISITOR_LIMIT: 'הגעתם למגבלת הזיהויים היומית לאורחים. הירשמו כדי להמשיך.',
   DAILY_LIMIT: 'הגעתם למגבלת הזיהויים היומית. אפשר להמשיך מחר.',
+  CARE_UNAVAILABLE: 'מידע הטיפול אינו זמין כרגע. נסו שוב מאוחר יותר.',
 };
 
 const STATUS = {
@@ -39,6 +40,7 @@ const STATUS = {
   PENDING_EXPIRED: 404,
   VISITOR_LIMIT: 429,
   DAILY_LIMIT: 429,
+  CARE_UNAVAILABLE: 503,
 };
 
 export class AppError extends Error {

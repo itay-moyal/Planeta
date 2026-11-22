@@ -11,6 +11,8 @@ export const config = {
   visitorDailyLimit: Number(process.env.VISITOR_DAILY_LIMIT) || (process.env.NODE_ENV === 'test' ? 1000 : 3),
   // Identifications per logged-in user per day (tests: effectively unlimited)
   userDailyIdentifyLimit: Number(process.env.USER_DAILY_IDENTIFY_LIMIT) || (process.env.NODE_ENV === 'test' ? 1000 : 10),
+  perenualApiKey: process.env.PERENUAL_API_KEY || '',
+  careCacheDays: Number(process.env.CARE_CACHE_DAYS) || 30,
   pendingTtlMinutes: 30,
   clientOrigin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
 };
