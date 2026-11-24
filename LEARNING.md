@@ -61,3 +61,53 @@ His own idea while explaining: some people have gardens, so placement should als
 ### Product idea from the explanation: garden placement (built)
 
 Placement is now `indoor`, `balcony` or `garden`. `garden` is its own value (not merged into one "outdoor") because a garden plant is usually in the ground while a balcony plant is in a pot, which will matter for watering. It takes sun exposure only (no pot size) and may belong to a planter, which works as a garden bed. Adding a value to the allowed list needed no data migration. For the weather logic in phase 5, the rule is "anything that is not `indoor` is outdoor".
+
+## Phase 3: care data and care plan (Itay's explanation)
+
+We started by adding the project to a new GitHub repository, after we had a problem caused by not pushing it. Phase 1 and phase 2 were pushed and phase 3 was created.
+
+The flow of phase 3 goes like this: when a user checks for info about a plant he added to his plants (using the build care plan button), the server searches Perenual by scientific name, which goes only for the exact match, and then it fetches the details about the plant, sends the details to the LLM, the LLM checks for cache / LLM limit / LLM kill switch, and if everything is OK it builds an output structure and sends it to the user with the details (watering / poison).
+
+There are 4 outcomes:
+
+1. Found: the data exists.
+2. Not found: no such species / no data.
+3. Restricted: the plan doesn't include it (need to upgrade to get its data).
+4. Temporary failures: network errors, rate limits and so on. They are never cached and the user sees "try again later".
+
+A. If the data exists (found) it is sent to the LLM: the Anthropic SDK gets the prompt, structures an output, and validates the LLM limit and kill switch.
+B. Not found and restricted: the user gets a "not found" error. We are being honest about not having details about the plant instead of using AI to find something that is not 100% certain.
+
+### Corrections and gaps
+
+What was right: the exact scientific-name match, the four outcomes (three are cached, the temporary failure is not), and the honesty rule (no data means no plan, not an AI guess). That is the core.
+
+1. **Who does the checking.** The LLM checks nothing. It cannot see a cache, a limit or a switch. Our backend does all of it, in this order, before the model is ever called:
+   1. The plant belongs to the logged-in user (someone else's plant is a 404).
+   2. A plan that already matches the placement is returned as it is (idempotent, no cost).
+   3. Care data: the cache first, Perenual only on a miss.
+   4. No data: stop here, no LLM call.
+   5. The lock on the plant is taken (one atomic step).
+   6. The user's daily LLM allowance is spent (an atomic counter, spent before the call because a failed call can still cost money).
+   7. The kill switch is checked, and only then the Anthropic call is made.
+2. **The cache comes first, and it is the point of the design.** The server asks the cache (`species_cache`) before Perenual. Even "not found" and "restricted" are cached, because the free Perenual plan allows only 100 requests a day for all users together. A species costs at most one lookup per 30 days. A Hebrew (non-Latin) name makes no request at all, because Perenual only knows Latin names.
+3. **The poison warning does not come from the LLM.** Warnings (pet and human toxicity, planter-mates that need very different watering or light) are computed by plain code from the stored data. The LLM writes only the plan text (summary, watering, light, tips, and a list of "unknown" topics). A fact that matters for safety should not depend on a model's wording.
+4. **What the LLM receives and returns.** The backend sends an allowlisted set of fields: the species, the care facts and the placement. Never a user id, email, name or city. The model must answer in a fixed JSON schema, and the backend still checks the shape, the lengths and that the text is Hebrew, because the output of a model is input like any other and is not trusted.
+5. **"Not found" is a state, not an error.** For `not_found` and `restricted` the request succeeds (HTTP 200) and the plant gets the status `no_data`. The panel shows an honest message. Only the temporary failure is an error (HTTP 503, "try again later"). If an old cached answer exists while Perenual is down, we serve the old answer instead of failing.
+6. **`restricted` has a surprising shape (worth knowing for an interview).** Perenual answers a species outside the free plan with HTTP 429, the same code as a real rate limit. Only the plain-text body "Please Upgrade Plan" tells them apart. The code reads the body: "Upgrade" means restricted (cached), anything else is a temporary rate limit (never cached).
+7. **The trigger.** The plan is not only built by the button. After a plant is saved, the client fires the request in the background (the button is the fallback, and the way to update). Opening the panel only reads, and never costs anything.
+8. **Missing from the explanation, the parts worth knowing:**
+   - **Stale:** the plan stores a fingerprint of the placement it was written for. Change the placement and the plan is marked stale. It stays visible, and the user chooses whether to spend a regeneration.
+   - **The lock (`generatingSince`):** a short marker, set atomically, so simultaneous requests (a double click) produce one LLM call and not several. It expires after 2 minutes so a crash cannot block a plant.
+   - **The bug we found:** the daily counter gave a false "limit reached" when several first-of-the-day requests arrived together. The losers of the race to start the counter fell through to "limit reached". The fix is one retry of the counting step. The lesson: "I did not match any of my cases" does not mean "the limit is reached".
+   - **Cross-user safety:** every care endpoint filters by the user id from the login cookie, and tests prove user B gets a 404 on user A's plant.
+
+### The flow in full (for an interview)
+
+1. The plant is saved (`POST /api/plants`), and the client fires `POST /api/plants/:id/care` in the background.
+2. The server finds the plant for this user only. A plan that matches the placement is returned as it is.
+3. Care data: the cache first (30 days). On a miss, Perenual: search for the exact scientific name, then fetch the details. Outcomes `found`, `not_found` and `restricted` are cached. A temporary failure is not.
+4. No data: the plant gets `no_data`, no LLM call.
+5. With data: lock, daily limit, kill switch, then one Anthropic call with the allowlisted data and a JSON schema.
+6. The backend validates the JSON and stores the plan, the model name, the token counts and the placement fingerprint on the plant.
+7. The panel reads `GET /care`: the plan, whether it is stale, and the warnings computed by code.
