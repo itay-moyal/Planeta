@@ -135,6 +135,25 @@ describe.skipIf(!dbTestsEnabled)('care endpoints with a test database', () => {
     expect((await B.post(`/api/plants/${id}/care`)).status).toBe(200);
   });
 
+  it('with the kill switch on, answers 503 and costs the user nothing (no count, no lock, no call)', async () => {
+    const { config } = await import('../src/config.js');
+    const E = request.agent(app);
+    await E.post('/api/auth/signup').send({ email: 'e@example.com', password: 'password123' }).expect(201);
+    const id = await save(E, 'Foo bar');
+    config.llmKillSwitch = true;
+    try {
+      const res = await E.post(`/api/plants/${id}/care`);
+      expect(res.status).toBe(503);
+      expect(res.body.error.code).toBe('LLM_DISABLED');
+    } finally {
+      config.llmKillSwitch = false;
+    }
+    expect(generateCarePlan).not.toHaveBeenCalled();
+    expect((await mongoose.model('User').findOne({ email: 'e@example.com' })).usage.llmCalls).toBe(0);
+    expect((await mongoose.model('Plant').findById(id)).care.generatingSince).toBeNull();
+    expect((await E.post(`/api/plants/${id}/care`)).status).toBe(200); // works again once it is switched back on
+  });
+
   it('blocks with a Hebrew 429 at the daily LLM limit, per user', async () => {
     const C = request.agent(app);
     await C.post('/api/auth/signup').send({ email: 'c@example.com', password: 'password123' }).expect(201);

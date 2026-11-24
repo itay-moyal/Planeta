@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { config } from '../config.js';
 import { AppError } from '../errors.js';
 import { Plant } from '../models/plant.model.js';
 import { SpeciesCache } from '../models/speciesCache.model.js';
@@ -63,6 +64,9 @@ export async function generateCare(userId, plantId) {
     await Plant.updateOne({ _id: plant._id, userId }, { $set: { 'care.status': 'no_data', 'care.plan': null, 'care.placementKey': key, 'care.generatedAt': new Date() } });
     return buildView(await findOwnPlant(userId, plantId));
   }
+
+  // Switched off for everyone: stop before anything is locked or counted, so a blocked attempt costs the user nothing.
+  if (config.llmKillSwitch) throw new AppError('LLM_DISABLED');
 
   // Take the lock in one atomic step. Only one of several simultaneous requests gets it.
   const now = new Date();
