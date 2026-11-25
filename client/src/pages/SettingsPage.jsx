@@ -17,6 +17,7 @@ export default function SettingsPage() {
   const [city, setCity] = useState(user.city);
   const [timezone, setTimezone] = useState(user.timezone);
   const [channel, setChannel] = useState(user.notificationChannel);
+  const [reminderTime, setReminderTime] = useState(user.reminderTime);
   const [error, setError] = useState('');
   const [saved, setSaved] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -29,7 +30,7 @@ export default function SettingsPage() {
     try {
       const data = await api('/api/me', {
         method: 'PATCH',
-        json: { city, timezone, notificationChannel: channel },
+        json: { city, timezone, notificationChannel: channel, reminderTime },
       });
       setUser(data.user); // keep the shared user in sync
       setSaved(true);
@@ -55,6 +56,10 @@ export default function SettingsPage() {
               <option key={tz} value={tz}>{tz}</option>
             ))}
           </select>
+        </label>
+        <label>
+          באיזו שעה להזכיר לי להשקות (לפי אזור הזמן שלך)
+          <input type="time" value={reminderTime} onChange={(e) => setReminderTime(e.target.value)} required dir="ltr" />
         </label>
         <label>
           איך לשלוח תזכורות

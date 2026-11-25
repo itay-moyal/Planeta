@@ -13,6 +13,12 @@ export function isValidTimezone(tz) {
   }
 }
 
+// "HH:MM", 24-hour clock, as sent by <input type="time">.
+export const DEFAULT_REMINDER_TIME = '09:00';
+export function isValidReminderTime(value) {
+  return typeof value === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(value);
+}
+
 export function validateSettings(input) {
   const update = {};
   if (input.city !== undefined) {
@@ -22,6 +28,10 @@ export function validateSettings(input) {
   if (input.timezone !== undefined) {
     if (!isValidTimezone(input.timezone)) throw new AppError('INVALID_INPUT');
     update.timezone = input.timezone;
+  }
+  if (input.reminderTime !== undefined) {
+    if (!isValidReminderTime(input.reminderTime)) throw new AppError('INVALID_INPUT');
+    update.reminderTime = input.reminderTime;
   }
   if (input.notificationChannel !== undefined) {
     if (!CHANNELS.includes(input.notificationChannel)) throw new AppError('INVALID_INPUT');

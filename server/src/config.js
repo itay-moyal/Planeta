@@ -19,6 +19,8 @@ export const config = {
   // Care-plan generations per user per day (tests: effectively unlimited)
   userDailyLlmLimit: Number(process.env.USER_DAILY_LLM_LIMIT) || (process.env.NODE_ENV === 'test' ? 1000 : 20),
   carePlanModel: process.env.CARE_PLAN_MODEL || 'claude-haiku-5-5',
+  // The reminder scheduler runs inside the server process (off in tests, or with SCHEDULER_ENABLED=false)
+  schedulerEnabled: process.env.SCHEDULER_ENABLED !== 'false' && process.env.NODE_ENV !== 'test',
   pendingTtlMinutes: 30,
   clientOrigin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
 };

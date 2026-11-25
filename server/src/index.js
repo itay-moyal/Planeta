@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { config } from './config.js';
 import { app } from './app.js';
+import { startScheduler } from './services/scheduler.service.js';
 
 if (!config.jwtSecret) {
   console.error('JWT_SECRET is not set - refusing to start');
@@ -12,6 +13,7 @@ if (config.mongoUri) {
   try {
     await mongoose.connect(config.mongoUri);
     console.log('MongoDB connected');
+    if (config.schedulerEnabled) startScheduler();
   } catch (err) {
     console.error('MongoDB connection failed:', err.message);
   }

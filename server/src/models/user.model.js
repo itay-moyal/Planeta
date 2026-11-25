@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema({
   language: { type: String, default: 'he' },
   notificationChannel: { type: String, enum: ['telegram', 'whatsapp', 'email'], default: 'email' },
   channelAddress: { type: String, default: '' },
+  reminderTime: { type: String, default: '09:00' }, // local time of day (the user's timezone) for the daily watering reminder
   // Daily usage counter; `day` is the UTC date the count belongs to (see usage.service.js)
   usage: {
     day: { type: String, default: '' },

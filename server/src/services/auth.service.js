@@ -17,6 +17,7 @@ export function toPublicUser(user) {
     timezone: user.timezone,
     language: user.language,
     notificationChannel: user.notificationChannel,
+    reminderTime: user.reminderTime || '09:00',
     isDemo: user.isDemo,
     identificationsLeft: identificationsLeft(user), // the user's own allowance only, never the shared quota
   };
