@@ -29,6 +29,13 @@ const plantSchema = new mongoose.Schema({
     generatedAt: { type: Date },
     generatingSince: { type: Date, default: null }, // short lock so two requests cannot both call the LLM
   },
+  // Watering schedule (see watering.service.js). No interval means no reminders for this plant.
+  watering: {
+    intervalDays: { type: Number, default: null },
+    intervalSource: { type: String, enum: ['care_data', 'user'] },
+    lastWateredAt: { type: Date, default: null },
+    nextDueAt: { type: Date, default: null },
+  },
   createdAt: { type: Date, default: Date.now },
 });
 

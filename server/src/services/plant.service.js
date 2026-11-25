@@ -21,6 +21,12 @@ export function toPublicPlant(p) {
     referenceImageUrl: p.referenceImageUrl,
     placement: JSON.parse(JSON.stringify(p.placement)),
     planterId: p.planterId ? p.planterId.toString() : null,
+    watering: {
+      intervalDays: p.watering?.intervalDays ?? null,
+      intervalSource: p.watering?.intervalSource ?? null,
+      lastWateredAt: p.watering?.lastWateredAt ?? null,
+      nextDueAt: p.watering?.nextDueAt ?? null,
+    },
     createdAt: p.createdAt,
   };
 }

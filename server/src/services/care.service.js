@@ -8,6 +8,7 @@ import { getCareData } from './species.service.js';
 import { generateCarePlan } from './llm.service.js';
 import { consumeLlmCall } from './usage.service.js';
 import { computeWarnings } from './warnings.js';
+import { applyCareInterval } from './watering.service.js';
 
 const LOCK_MS = 2 * 60 * 1000; // a crashed request cannot block a plant for longer than this
 
@@ -56,10 +57,16 @@ export async function getCare(userId, plantId) {
 export async function generateCare(userId, plantId) {
   const plant = await findOwnPlant(userId, plantId);
   const key = placementKey(plant.placement);
-  if (plant.care?.status === 'ready' && plant.care.placementKey === key) return buildView(plant);
+  if (plant.care?.status === 'ready' && plant.care.placementKey === key) {
+    // A plan from before reminders existed: fill the interval from the cached data (read only, no API call).
+    const cached = (await cachedCareData([plant.species.scientificName])).get(keyOf(plant.species.scientificName));
+    if (cached) await applyCareInterval(plant, cached);
+    return buildView(await findOwnPlant(userId, plantId));
+  }
 
   // Care data (cache first). Without data there is nothing to ground a plan on, so no LLM call.
   const found = await getCareData(plant.species.scientificName);
+  if (found.status === 'found') await applyCareInterval(plant, found.data); // reminders need an interval, even if no plan follows
   if (found.status !== 'found') {
     await Plant.updateOne({ _id: plant._id, userId }, { $set: { 'care.status': 'no_data', 'care.plan': null, 'care.placementKey': key, 'care.generatedAt': new Date() } });
     return buildView(await findOwnPlant(userId, plantId));

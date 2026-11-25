@@ -1,5 +1,6 @@
 import { createPlant, deletePlant, listPlants, toPublicPlant, updatePlant } from '../services/plant.service.js';
 import { generateCare, getCare } from '../services/care.service.js';
+import { listDue, recordAnswer, setUserInterval } from '../services/watering.service.js';
 
 export async function createPlantHandler(req, res, next) {
   try {
@@ -39,6 +40,30 @@ export async function getCareHandler(req, res, next) {
 export async function generateCareHandler(req, res, next) {
   try {
     res.json({ care: await generateCare(req.userId, req.params.id) });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function listDueHandler(req, res, next) {
+  try {
+    res.json({ plants: (await listDue(req.userId)).map(toPublicPlant) });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function answerWateringHandler(req, res, next) {
+  try {
+    res.json({ plant: toPublicPlant(await recordAnswer(req.userId, req.params.id, req.body ?? {})) });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function setIntervalHandler(req, res, next) {
+  try {
+    res.json({ plant: toPublicPlant(await setUserInterval(req.userId, req.params.id, req.body?.intervalDays)) });
   } catch (err) {
     next(err);
   }
