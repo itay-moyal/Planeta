@@ -1,3 +1,5 @@
+import { sendToUser } from '../services/push.service.js';
+
 // A NotificationChannel is any object with:
 //   name: string
 //   send(recipient, message) -> Promise, rejects when the message could not be delivered
@@ -13,7 +15,15 @@ export const logChannel = {
   },
 };
 
-// Which channel serves this user. Web push and email are added in the next steps.
+// Web push to every device the user turned reminders on for.
+export const pushChannel = {
+  name: 'push',
+  async send(recipient, message) {
+    await sendToUser(recipient.userId, message);
+  },
+};
+
+// Which channel serves this user. Email is added in a later step.
 export function getChannel(user) {
-  return logChannel;
+  return user.notificationChannel === 'push' ? pushChannel : logChannel;
 }

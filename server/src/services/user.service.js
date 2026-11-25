@@ -2,7 +2,7 @@ import { AppError } from '../errors.js';
 import { User } from '../models/user.model.js';
 
 // channelAddress is NOT editable here: it is set only by the Telegram linking flow (phase 4).
-const CHANNELS = ['telegram', 'whatsapp', 'email'];
+const CHANNELS = ['push', 'telegram', 'whatsapp', 'email'];
 
 export function isValidTimezone(tz) {
   try {

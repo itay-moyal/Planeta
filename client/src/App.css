@@ -44,3 +44,6 @@ footer { text-align: center; color: #666; margin-top: 24px; font-size: 0.85em; }
 .care-stale { background: #fffbe6; border-radius: 8px; padding: 8px; }
 .care-unknown { color: #555; }
 .care-note { color: #666; font-size: 0.8em; }
+
+.push-box { background: #fff; border-radius: 12px; padding: 12px; margin-top: 16px; }
+.push-box h2 { margin-top: 0; font-size: 1.1rem; }

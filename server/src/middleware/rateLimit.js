@@ -37,3 +37,12 @@ export const identifyLimiter = rateLimit({
     });
   },
 });
+
+// The "send me a test notification" button: a few per minute is plenty.
+export const pushTestLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: process.env.NODE_ENV === 'test' ? 1000 : 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: tooMany,
+});

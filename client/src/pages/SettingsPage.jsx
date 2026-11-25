@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { api } from '../api.js';
 import { useAuth } from '../AuthContext.jsx';
+import PushSetup from '../components/PushSetup.jsx';
 
 function timezoneOptions(current) {
   let zones = [];
@@ -16,7 +17,6 @@ export default function SettingsPage() {
   const { user, setUser } = useAuth();
   const [city, setCity] = useState(user.city);
   const [timezone, setTimezone] = useState(user.timezone);
-  const [channel, setChannel] = useState(user.notificationChannel);
   const [reminderTime, setReminderTime] = useState(user.reminderTime);
   const [error, setError] = useState('');
   const [saved, setSaved] = useState(false);
@@ -30,7 +30,7 @@ export default function SettingsPage() {
     try {
       const data = await api('/api/me', {
         method: 'PATCH',
-        json: { city, timezone, notificationChannel: channel, reminderTime },
+        json: { city, timezone, reminderTime },
       });
       setUser(data.user); // keep the shared user in sync
       setSaved(true);
@@ -61,18 +61,11 @@ export default function SettingsPage() {
           באיזו שעה להזכיר לי להשקות (לפי אזור הזמן שלך)
           <input type="time" value={reminderTime} onChange={(e) => setReminderTime(e.target.value)} required dir="ltr" />
         </label>
-        <label>
-          איך לשלוח תזכורות
-          <select value={channel} onChange={(e) => setChannel(e.target.value)}>
-            <option value="email">אימייל</option>
-            <option value="telegram">טלגרם</option>
-          </select>
-        </label>
-        {channel === 'telegram' && <small>חיבור הבוט של טלגרם יתווסף בהמשך.</small>}
         {error && <p className="error">{error}</p>}
         {saved && <p className="success">נשמר ✓</p>}
         <button type="submit" className="primary" disabled={busy}>{busy ? 'שומר...' : 'שמירה'}</button>
       </form>
+      <PushSetup />
     </main>
   );
 }

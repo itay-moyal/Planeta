@@ -7,6 +7,7 @@ import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
 import plantRoutes from './routes/plant.routes.js';
 import planterRoutes from './routes/planter.routes.js';
+import pushRoutes from './routes/push.routes.js';
 import { errorHandler } from './errors.js';
 
 export const app = express();
@@ -18,5 +19,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/me', userRoutes);
 app.use('/api/plants', plantRoutes);
 app.use('/api/planters', planterRoutes);
+app.use('/api/push', pushRoutes);
 app.use('/api/identify', identifyRoutes);
 app.use(errorHandler);
